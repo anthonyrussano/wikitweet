@@ -1,13 +1,17 @@
 from requests_oauthlib import OAuth1Session
 import os
 import json
+import vars
 
 # In your terminal please set your environment variables by running the following lines of code.
 # export 'CONSUMER_KEY'='<your_consumer_key>'
 # export 'CONSUMER_SECRET'='<your_consumer_secret>'
 
-consumer_key = os.environ.get("CONSUMER_KEY")
-consumer_secret = os.environ.get("CONSUMER_SECRET")
+# consumer_key = os.environ.get("CONSUMER_KEY")
+# consumer_secret = os.environ.get("CONSUMER_SECRET")
+
+consumer_key = vars.CONSUMER_KEY
+consumer_secret = vars.CONSUMER_SECRET
 
 # Be sure to add replace the text of the with the text you wish to Tweet. You can also add parameters to post polls, quote Tweets, Tweet with reply settings, and Tweet to Super Followers in addition to other features.
 payload = {"text": "Hello world!"}
