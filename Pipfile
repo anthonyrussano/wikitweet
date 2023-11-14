@@ -6,6 +6,9 @@ name = "pypi"
 [packages]
 requests-oauthlib = "*"
 markdown-it-py = "*"
+textblob = "*"
+beautifulsoup4 = "*"
+lxml = "*"
 
 [dev-packages]
 
