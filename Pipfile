@@ -9,6 +9,7 @@ markdown-it-py = "*"
 textblob = "*"
 beautifulsoup4 = "*"
 lxml = "*"
+requests = "*"
 
 [dev-packages]
 
