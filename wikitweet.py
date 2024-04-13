@@ -91,15 +91,22 @@ sentence = extract_random_sentence(file_content)
 if not sentence:
     raise Exception("Could not find a suitable sentence within the character limit")
 
-# Post to Twitter
-payload = {"text": sentence}
+# Prompt the user before posting
+user_confirmation = input("Tweet this sentence? (yes/no): " + sentence + "\n")
+if user_confirmation.lower() == "yes":
+    # Post to Twitter
+    payload = {"text": sentence}
 
-response = oauth.post("https://api.twitter.com/2/tweets", json=payload)
-if response.status_code != 201:
-    raise Exception(
-        "Request returned an error: {} {}".format(response.status_code, response.text)
-    )
+    response = oauth.post("https://api.twitter.com/2/tweets", json=payload)
+    if response.status_code != 201:
+        raise Exception(
+            "Request returned an error: {} {}".format(
+                response.status_code, response.text
+            )
+        )
 
-print("Response code: {}".format(response.status_code))
-json_response = response.json()
-print(json.dumps(json_response, indent=4, sort_keys=True))
+    print("Response code: {}".format(response.status_code))
+    json_response = response.json()
+    print(json.dumps(json_response, indent=4, sort_keys=True))
+else:
+    print("Tweeting aborted by the user.")
