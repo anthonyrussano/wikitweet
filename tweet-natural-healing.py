@@ -5,10 +5,14 @@ from requests_oauthlib import OAuth1Session
 import vars
 
 # OAuth credentials
-consumer_key = vars.OAUTH_CONSUMER_KEY
-consumer_secret = vars.OAUTH_CONSUMER_SECRET
-access_token = vars.OAUTH_ACCESS_TOKEN
-access_token_secret = vars.OAUTH_ACCESS_TOKEN_SECRET
+consumer_key = os.getenv('OAUTH_CONSUMER_KEY')
+consumer_secret = os.getenv('OAUTH_CONSUMER_SECRET')
+access_token = os.getenv('OAUTH_ACCESS_TOKEN')
+access_token_secret = os.getenv('OAUTH_ACCESS_TOKEN_SECRET')
+
+if not all([consumer_key, consumer_secret, access_token, access_token_secret]):
+    raise ValueError("Twitter OAuth credentials are not set in environment variables.")
+
 
 def fetch_random_h3_and_below_content_with_image(base_url, category_path):
     url = f"{base_url}{category_path}"
