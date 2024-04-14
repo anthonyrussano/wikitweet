@@ -2,7 +2,6 @@ import requests
 from bs4 import BeautifulSoup
 import random
 from requests_oauthlib import OAuth1Session
-import vars
 
 # OAuth credentials
 consumer_key = os.getenv('OAUTH_CONSUMER_KEY')
