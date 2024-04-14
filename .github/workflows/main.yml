@@ -1,0 +1,25 @@
+name: Run Tweet Script
+
+on:
+  schedule:
+    - cron: '0 * * * *'  # Runs every hour, adjust as needed
+  workflow_dispatch:  # Allows manual triggering from GitHub web interface
+
+jobs:
+  run-script:
+    runs-on: ubuntu-latest  # Specifies the runner environment
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2  # Checks out your repository under $GITHUB_WORKSPACE
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # Set the Python version
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt  # Installs required Python packages
+
+    - name: Run script
+      run: python tweet-natural-healing.py
