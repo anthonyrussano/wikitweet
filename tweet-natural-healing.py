@@ -45,7 +45,7 @@ def fetch_random_h3_and_below_content_with_image(base_url, category_path):
                     break
                 if sibling.name:
                     content_list.append(sibling.text.strip())
-    content = '\n'.join(content_list) if content_list else "No suitable content found."
+    content = '\n'.join(content_list) if content_list else "..."
     return title, content, image_url, article_url
 
 def upload_image_to_twitter(image_url, oauth_session):
@@ -59,7 +59,7 @@ def upload_image_to_twitter(image_url, oauth_session):
     return response.json()['media_id_string']
 
 def post_tweet(title, content, url, media_id, oauth_session):
-    tweet_text = f"{title}: {content[:200]}... Read more: {url}"
+    tweet_text = f"{title} \n {content} \n Read more: {url}"
     if media_id:
         payload = {
             "text": tweet_text,
