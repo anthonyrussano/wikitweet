@@ -79,28 +79,30 @@ def upload_image_to_twitter(image_url, oauth_session):
 
 def post_tweet(title, content, url, media_id, oauth_session):
     base_tweet_text = f"{title} \nRead more: {url}"
-    max_tweet_length = 280  # Twitter's maximum character limit for a tweet
+    max_tweet_length = 280
+    tweets = []
+    while len(content) > 0:
+        available_length = max_tweet_length - len(base_tweet_text) - 4
+        if len(content) <= available_length:
+            tweet_text = f"{content} \n Read more: {url}"
+            content = ""
+        else:
+            # Find a good place to split the content (e.g., end of a sentence)
+            split_point = content.rfind('.', 0, available_length)
+            if split_point == -1:  # No period found, force split
+                split_point = available_length
+            tweet_text = content[:split_point + 1]
+            content = content[split_point + 1:]
+        tweets.append(tweet_text)
 
-    # Check if the total tweet length will be within Twitter's limit
-    if len(base_tweet_text) + len(content) <= max_tweet_length:
-        tweet_text = f"{title} \n {content} \n Read more: {url}"
-    else:
-        # Trim the content to fit the tweet within the limit
-        available_length = max_tweet_length - len(base_tweet_text) - 4  # -4 for extra spaces and newlines
-        tweet_text = f"{title} \n {content[:available_length]}..."
-
-    if media_id:
-        payload = {
-            "text": tweet_text,
-            "media": {
-                "media_ids": [media_id]
-            }
-        }
-    else:
-        payload = {"text": tweet_text}
-
-    response = oauth_session.post("https://api.twitter.com/2/tweets", json=payload)
-    return response.json()
+    # Post each tweet in the thread
+    for tweet_text in tweets:
+        if media_id:
+            payload = {"text": tweet_text, "media": {"media_ids": [media_id]}}
+        else:
+            payload = {"text": tweet_text}
+        response = oauth_session.post("https://api.twitter.com/2/tweets", json=payload)
+        print(response.json())  # Print response or handle it appropriately
 
 
 # Setup OAuth session
