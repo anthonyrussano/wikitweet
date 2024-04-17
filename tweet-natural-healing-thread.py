@@ -105,14 +105,13 @@ def post_tweet(title, content, url, media_id, oauth_session):
             payload["reply"] = {"in_reply_to_tweet_id": previous_tweet_id}
 
         response = oauth_session.post("https://api.twitter.com/2/tweets", json=payload)
-        response_data = response.json()
-        print(response_data)  # Print response or handle it appropriately
-        
         if response.status_code == 201:
+            response_data = response.json()
+            print(response_data)
             previous_tweet_id = response_data["data"]["id"]
         else:
-            print(f"Failed to post tweet: {response_data['error']}")
-
+            # Print the entire response data for non-201 status codes
+            print(f"Failed to post tweet with status {response.status_code}: {response.text}")
 
 
 # Setup OAuth session
