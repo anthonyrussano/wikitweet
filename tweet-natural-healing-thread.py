@@ -2,6 +2,7 @@ import os
 import requests
 from bs4 import BeautifulSoup
 import random
+import time
 from requests_oauthlib import OAuth1Session
 
 # OAuth credentials
@@ -12,7 +13,6 @@ access_token_secret = os.getenv('OAUTH_ACCESS_TOKEN_SECRET')
 
 if not all([consumer_key, consumer_secret, access_token, access_token_secret]):
     raise ValueError("Twitter OAuth credentials are not set in environment variables.")
-
 
 def fetch_random_h3_and_below_content_with_image(base_url, category_path, attempted_urls=None):
     if attempted_urls is None:
@@ -77,6 +77,21 @@ def upload_image_to_twitter(image_url, oauth_session):
         return None
     return response.json()['media_id_string']
 
+def exponential_backoff_retry(request_func, max_retries=5):
+    retry_delay = 10  # start with 10 seconds delay
+    for attempt in range(max_retries):
+        response = request_func()
+        if response.status_code == 201:
+            return response
+        elif response.status_code == 429:
+            print(f"Rate limit exceeded, retrying in {retry_delay} seconds...")
+            time.sleep(retry_delay)
+            retry_delay *= 2  # double the delay for the next attempt
+        else:
+            print(f"Failed to post tweet with status {response.status_code}: {response.text}")
+            break
+    return None
+
 def post_tweet(title, content, url, media_id, oauth_session):
     base_tweet_text = f"{title} \nRead more: {url}"
     max_tweet_length = 280
@@ -87,15 +102,13 @@ def post_tweet(title, content, url, media_id, oauth_session):
             tweet_text = f"{content} \nRead more: {url}"
             content = ""
         else:
-            # Find a good place to split the content (e.g., end of a sentence)
             split_point = content.rfind('.', 0, available_length)
-            if split_point == -1:  # No period found, force split
+            if split_point == -1:
                 split_point = available_length
             tweet_text = content[:split_point + 1]
             content = content[split_point + 1:]
         tweets.append(tweet_text)
 
-    # Post each tweet in the thread
     previous_tweet_id = None
     for tweet_text in tweets:
         payload = {"text": tweet_text}
@@ -104,15 +117,11 @@ def post_tweet(title, content, url, media_id, oauth_session):
         if previous_tweet_id:
             payload["reply"] = {"in_reply_to_tweet_id": previous_tweet_id}
 
-        response = oauth_session.post("https://api.twitter.com/2/tweets", json=payload)
-        if response.status_code == 201:
+        # Wrap the API call in a retry logic function
+        response = exponential_backoff_retry(lambda: oauth_session.post("https://api.twitter.com/2/tweets", json=payload))
+        if response and response.status_code == 201:
             response_data = response.json()
-            print(response_data)
             previous_tweet_id = response_data["data"]["id"]
-        else:
-            # Print the entire response data for non-201 status codes
-            print(f"Failed to post tweet with status {response.status_code}: {response.text}")
-
 
 # Setup OAuth session
 oauth = OAuth1Session(consumer_key, client_secret=consumer_secret, resource_owner_key=access_token, resource_owner_secret=access_token_secret)
