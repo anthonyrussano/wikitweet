@@ -1,8 +1,8 @@
 name: Run Tweet Script
 
 on:
-  schedule:
-    - cron: '0 */4 * * *'
+  # schedule:
+  #   - cron: '0 */4 * * *'
   workflow_dispatch:  # Allows manual triggering from GitHub web interface
 
 jobs:
