@@ -15,7 +15,7 @@ oauth = OAuth1Session(
 )
 
 
-payload = {"text": "formatted_tweet"}
+payload = {"text": "hello world!"}
 response = oauth.post(
     "https://api.twitter.com/2/tweets",
     json=payload,
