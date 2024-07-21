@@ -27,4 +27,5 @@ jobs:
         OAUTH_CONSUMER_SECRET: ${{ secrets.OAUTH_CONSUMER_SECRET }}
         OAUTH_ACCESS_TOKEN: ${{ secrets.OAUTH_ACCESS_TOKEN }}
         OAUTH_ACCESS_TOKEN_SECRET: ${{ secrets.OAUTH_ACCESS_TOKEN_SECRET }}
-      run: python tweet-natural-healing-thread.py
+      # run: python tweet-natural-healing-thread.py
+      run: python rss_tweet_thread_002.py
