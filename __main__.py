@@ -153,8 +153,8 @@ oauth = OAuth1Session(
     resource_owner_secret=access_token_secret,
 )
 
-# Parse the URLs file
-with open("urls_file.txt", "r") as file:
+# Parse the rss file
+with open("rss", "r") as file:
     urls_content = file.read()
 urls = parse_urls_file(urls_content)
 
